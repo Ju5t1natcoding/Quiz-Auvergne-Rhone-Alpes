@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz: Auvergne-Rhône-Alpes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: linear-gradient(180deg,#f7fbff,#eef6ff);
+      --card:#ffffff;
+      --accent:#2b6ef6;
+      --muted:#64748b;
+      --radius:14px;
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    body{background:var(--bg);display:flex;align-items:flex-start;justify-content:center;padding:20px;}
+    .container{width:100%;max-width:760px;}
+    .card{
+      background:var(--card);border-radius:var(--radius);box-shadow:0 10px 30px rgba(11,22,55,0.08);
+      padding:18px;margin-bottom:18px;overflow:hidden;
+    }
+    header{display:flex;gap:12px;align-items:center;margin-bottom:8px;}
+    header .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6aa7ff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;}
+    header h1{font-size:18px;margin:0}
+    header p{margin:0;color:var(--muted);font-size:13px}
+    .img-wrap{width:100%;height:220px;border-radius:10px;overflow:hidden;margin:12px 0;display:flex;align-items:center;justify-content:center;background:#f0f4ff}
+    .img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+    .question{font-weight:600;font-size:16px;margin:8px 0}
+    .choices{display:grid;grid-template-columns:1fr;gap:10px;margin-top:8px}
+    button.choice{
+      padding:12px;border-radius:10px;border:1px solid rgba(11,22,55,0.06);background:white;font-weight:600;cursor:pointer;text-align:left;
+      transition:transform .12s, box-shadow .12s;
+    }
+    button.choice:active{transform:scale(.997)}
+    button.choice.correct{background:linear-gradient(90deg,#dff7e6,#e7ffef);border-color:#8fe09a}
+    button.choice.wrong{background:#fff0f0;border-color:#ffabab}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
+    .progress{height:10px;background:#eef2ff;border-radius:8px;overflow:hidden;margin-top:8px}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%;transition:width .45s}
+    .center{display:flex;gap:8px;align-items:center}
+    .btn{
+      background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(43,110,246,0.18)
+    }
+    .btn.ghost{background:transparent;color:var(--accent);box-shadow:none;border:1px solid rgba(43,110,246,0.12)}
+    .result{display:none;text-align:center;padding:20px}
+    .result.show{display:block}
+    .share{margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+    .small{font-size:13px;color:var(--muted)}
+    /* mobile tweaks */
+    @media(min-width:720px){
+      body{padding:40px}
+      .img-wrap{height:320px}
+      header h1{font-size:20px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <header>
+        <div class="logo">AR</div>
+        <div>
+          <h1>Quiz: Auvergne-Rhône-Alpes</h1>
+          <p class="small">5 imagini • întrebări în franceză • joacă pe telefon</p>
+        </div>
+      </header>
+
+      <div id="quizArea">
+        <div class="img-wrap"><img id="qImg" src="images/1.jpg" alt="image"></div>
+        <div class="question" id="qText">Încărcare întrebare...</div>
+
+        <div class="choices" id="choices"></div>
+
+        <div class="meta">
+          <div class="small" id="status">Întrebare <span id="cur">1</span> / <span id="total">5</span></div>
+          <div><button class="btn" id="nextBtn" style="display:none">Următoarea</button></div>
+        </div>
+
+        <div class="progress"><i id="bar"></i></div>
+      </div>
+
+      <div class="result card" id="resultCard">
+        <h2 id="resTitle">Ai terminat!</h2>
+        <p id="resText" class="small"></p>
+        <div style="margin-top:12px;font-weight:700;font-size:18px" id="finalScore">0 / 5</div>
+        <div class="share">
+          <a id="waShare" class="btn" href="#" target="_blank">Trimite pe WhatsApp</a>
+          <button id="retry" class="btn ghost">Reîncepe</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card small">
+      Sfaturi: înlocuiește imaginile din `images/1.jpg` ... `images/5.jpg`.  
+      Hostare fără instalare: Replit (HTML/CSS/JS) sau GitHub Pages.
+    </div>
+  </div>
+
+<script>
+/* date quiz: modifică textele/imagini/variante aici */
+const questions = [
+  {
+    img: "images/1.jpg",
+    q: "Quel est le célèbre lac situé à Annecy ?",
+    choices: ["Le Lac d'Annecy","Le Lac du Bourget","La Seine","Le Léman"],
+    ans: 0
+  },
+  {
+    img: "images/2.jpg",
+    q: "Quel sommet se trouve près de Chamonix ?",
+    choices: ["Mont Blanc","Puy de Dôme","Mont Ventoux","Le Pilat"],
+    ans: 0
+  },
+  {
+    img: "images/3.jpg",
+    q: "Quelle grande ville appartient à la région ?",
+    choices: ["Lyon","Nice","Bordeaux","Lille"],
+    ans: 0
+  },
+  {
+    img: "images/4.jpg",
+    q: "Puy-de-Dôme est un ____.",
+    choices: ["volcan","lac","château","forêt"],
+    ans: 0
+  },
+  {
+    img: "images/5.jpg",
+    q: "La région est surtout connue pour ses ____.",
+    choices: ["montagnes","plages","déserts","tropiques"],
+    ans: 0
+  }
+];
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+shuffle(questions);
+
+const total = questions.length;
+let idx = 0, score = 0, locked = false;
+
+const qImg = document.getElementById('qImg');
+const qText = document.getElementById('qText');
+const choicesEl = document.getElementById('choices');
+const cur = document.getElementById('cur');
+const tot = document.getElementById('total');
+const nextBtn = document.getElementById('nextBtn');
+const bar = document.getElementById('bar');
+
+const resultCard = document.getElementById('resultCard');
+const resText = document.getElementById('resText');
+const resTitle = document.getElementById('resTitle');
+const finalScore = document.getElementById('finalScore');
+const waShare = document.getElementById('waShare');
+const retry = document.getElementById('retry');
+
+tot.textContent = total;
+
+function render(){
+  locked = false;
+  nextBtn.style.display = 'none';
+  const item = questions[idx];
+  qImg.src = item.img;
+  qText.textContent = item.q;
+  const choices = item.choices.map((c, i) => ({text: c, index: i}));
+  shuffle(choices);
+  const correct = choices.findIndex(c => c.index === item.ans);
+  choicesEl.innerHTML = '';
+  choices.forEach((c_obj,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.textContent = c_obj.text;
+    btn.onclick = ()=> select(i, btn, correct);
+    choicesEl.appendChild(btn);
+  });
+  choicesEl.dataset.correct = correct;
+  cur.textContent = idx+1;
+  bar.style.width = `${((idx + 1) / total) * 100}%`;
+}
+
+function select(i, btn, correct){
+  if(locked) return;
+  locked = true;
+  const correcti = parseInt(correct);
+  Array.from(choicesEl.children).forEach((b,j)=>{
+    if(j===correcti) b.classList.add('correct');
+    if(j===i && j!==correcti) b.classList.add('wrong');
+    b.disabled = true;
+  });
+  if(i===correcti){
+    score++;
+  }
+  nextBtn.style.display = 'inline-block';
+  if(idx === total-1) nextBtn.textContent = 'Vezi rezultatul';
+  else nextBtn.textContent = 'Următoarea';
+}
+
+nextBtn.addEventListener('click', ()=>{
+  if(idx < total-1){
+    idx++;
+    render();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  document.getElementById('quizArea').style.display = 'none';
+  resultCard.classList.add('show');
+  resText.textContent = "Bravo! Voici ton résultat. Tu peux partager ton score avec tes collègues.";
+  finalScore.textContent = `${score} / ${total}`;
+  const hostLink = location.href; // dacă ai găzduit, linkul va fi acolo
+  const text = `Am făcut quizul Auvergne-Rhône-Alpes: ${score}/${total}. Joacă și tu: ${hostLink}`;
+  const waHref = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  waShare.href = waHref;
+  bar.style.width = '100%';
+}
+
+retry.addEventListener('click', ()=>{
+  idx = 0; score = 0; resultCard.classList.remove('show');
+  document.getElementById('quizArea').style.display = 'block';
+  shuffle(questions);
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
