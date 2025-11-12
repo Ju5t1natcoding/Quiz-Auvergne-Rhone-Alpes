@@ -141,8 +141,6 @@ function shuffle(arr) {
   return arr;
 }
 
-shuffle(questions);
-
 const total = questions.length;
 let idx = 0, score = 0, locked = false;
 
@@ -226,7 +224,6 @@ function showResult(){
 retry.addEventListener('click', ()=>{
   idx = 0; score = 0; resultCard.classList.remove('show');
   document.getElementById('quizArea').style.display = 'block';
-  shuffle(questions);
   render();
 });
 
